@@ -1,6 +1,7 @@
 import express, { Request, Response, NextFunction} from "express";
 import cookieParser from "cookie-parser";
 import authRouter from "./routes/authRoutes";
+import userRouter from "./routes/userRoutes";
 
 const app = express();
 
@@ -8,6 +9,7 @@ app.use(express.json({ limit: "30mb"}));
 app.use(cookieParser());
 
 app.use("/auth", authRouter);
+app.use("/user", userRouter);
 
 interface errType {
     statusCode: number,

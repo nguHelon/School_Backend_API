@@ -2,8 +2,8 @@ import { Request, Response, NextFunction } from "express";
 import jwt, { VerifyErrors, JwtPayload} from "jsonwebtoken";
 import errorHandler from "./errorMiddleware";
 
-interface customRequest extends Request {
-    user?: JwtPayload | string | undefined;
+export interface customRequest extends Request {
+    user?: JwtPayload | string;
 }
 
 const verifyToken = async (req: Request, res: Response, next: NextFunction): Promise<void> => {

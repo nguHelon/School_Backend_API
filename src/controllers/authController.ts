@@ -9,7 +9,7 @@ dotenv.config();
 const prisma = new PrismaClient();
 
 const login = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    const { email, password, role } = req.body;
+    const { email, password } = req.body;
 
     try {
 
@@ -47,6 +47,18 @@ const login = async (req: Request, res: Response, next: NextFunction): Promise<v
 
 }
 
+const logout = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+
+        res.clearCookie("access_token");
+        res.status(200).json("logged out succesfully");
+
+    } catch (err) {
+        next(err);
+    }
+}
+
 export {
     login,
+    logout
 }
