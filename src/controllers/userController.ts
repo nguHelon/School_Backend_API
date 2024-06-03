@@ -126,8 +126,160 @@ const getAllUser = async (req: customRequest, res: Response, next: NextFunction)
     }
 }
 
+const setStudentParent = async (req: customRequest, res: Response, next: NextFunction) => {
+    const { id } = req.params;
+    const { parentId } = req.body;
+
+    try {
+
+        const user = await prisma.user.findUnique({
+            where: {
+                id: parseInt(id)
+            }
+        })
+
+        if (user) {
+            
+            if (user.role !== "STUDENT") {
+                next(errorHandler(400, "This route is to set the parents of students only"))
+                return;
+            }
+
+            if ((req.user as JwtPayload).role == "ADMIN") {
+                const updatedUser = await prisma.student.update({
+                    where: {
+                        userId: parseInt(id)
+                    },
+                    data: {
+                        parentId: parentId
+                    }
+                })
+
+                console.log(updatedUser);
+                res.status(200).json(updatedUser);
+            } else {
+                next(errorHandler(400, "Only admins can edit user information"));
+                return;
+            }
+
+        } else {
+            next(errorHandler(404, "This is student does not exist"));
+            return;
+        }
+
+    } catch (err) {
+        next(err);
+    }
+}
+
+const getAllTeachers = async (req: customRequest, res: Response, next: NextFunction) => {
+    const { role } = req.user as JwtPayload;
+
+    try {
+
+        if (role !== "ADMIN") {
+            next(errorHandler(400, "Sorry only admins can retrieve user data"));
+        }
+
+        const teachers = await prisma.user.findMany({
+            where: {
+                role: "TEACHER"
+            },
+            include: {
+                teacher: true
+            }
+        })
+
+        console.log(teachers);
+        res.status(200).json(teachers);
+
+    } catch (err) {
+        next(err);
+    }
+}
+
+const getAllStudents = async (req: customRequest, res: Response, next: NextFunction) => {
+    const { role } = req.user as JwtPayload;
+
+    try {
+
+        if (role !== "ADMIN") {
+            next(errorHandler(400, "Sorry only admins can retrieve user data"));
+        }
+
+        const students = await prisma.user.findMany({
+            where: {
+                role: "STUDENT"
+            },
+            include: {
+                student: true
+            }
+        })
+
+        console.log(students);
+        res.status(200).json(students);
+
+    } catch (err) {
+        next(err);
+    }
+}
+
+const getAllParents = async (req: customRequest, res: Response, next: NextFunction) => {
+    const { role } = req.user as JwtPayload;
+
+    try {
+
+        if (role !== "ADMIN") {
+            next(errorHandler(400, "Sorry only admins can retrieve user data"));
+        }
+
+        const parents = await prisma.user.findMany({
+            where: {
+                role: "PARENT"
+            },
+            include: {
+                parent: true
+            }
+        })
+
+        console.log(parents);
+        res.status(200).json(parents);
+
+    } catch (err) {
+        next(err);
+    }
+}
+
+const getAllAdmins = async (req: customRequest, res: Response, next: NextFunction) => {
+    const { role } = req.user as JwtPayload;
+
+    try {
+
+        if (role !== "ADMIN") {
+            next(errorHandler(400, "Sorry only admins can retrieve user data"));
+        }
+
+        const admins = await prisma.user.findMany({
+            where: {
+                role: "ADMIN"
+            }
+        })
+
+        console.log(admins);
+        res.status(200).json(admins);
+
+    } catch (err) {
+        next(err);
+    }
+}
+
 export {
     createUser,
     updateUser,
-    getAllUser
+    getAllUser,
+    setStudentParent,
+    getAllTeachers,
+    getAllStudents,
+    getAllParents,
+    getAllAdmins
 }
