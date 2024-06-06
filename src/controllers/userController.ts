@@ -1,8 +1,8 @@
-import { Request, Response, NextFunction } from "express";
+import { Response, NextFunction } from "express";
 import bcrypt from "bcrypt";
 import { PrismaClient } from "@prisma/client";
 import errorHandler from "../utils/errorMiddleware";
-import { customRequest } from "../utils/authMiddleware";
+import { customRequest, Role } from "../utils/types";
 import { JwtPayload } from "jsonwebtoken";
 
 const prisma = new PrismaClient();
@@ -172,101 +172,49 @@ const setStudentParent = async (req: customRequest, res: Response, next: NextFun
     }
 }
 
-const getAllTeachers = async (req: customRequest, res: Response, next: NextFunction) => {
+const getUserByRole = async (req: customRequest, res: Response, next: NextFunction) => {
     const { role } = req.user as JwtPayload;
+    const { role: userRole } = req.query;
 
     try {
 
         if (role !== "ADMIN") {
             next(errorHandler(400, "Sorry only admins can retrieve user data"));
+            return;
         }
 
-        const teachers = await prisma.user.findMany({
-            where: {
-                role: "TEACHER"
-            },
-            include: {
-                teacher: true
+        if (!userRole || typeof role !== "string") {
+            next(errorHandler(400, "Invalid or missing role parameters"));
+            return;
+        } else {
+            let userByRole;
+
+            if (userRole == "ADMIN") {
+                
+                userByRole = await prisma.user.findMany({
+                    where: {
+                        role: userRole as Role,
+                    },                    
+                });
+    
+                console.log(userByRole);
+                res.status(200).json(userByRole);
+                return;
             }
-        })
 
-        console.log(teachers);
-        res.status(200).json(teachers);
+            userByRole = await prisma.user.findMany({
+                where: {
+                    role: userRole as Role,
+                },
+                include: {
+                    [(userRole as string).toLowerCase()]: true
+                }
+            });
 
-    } catch (err) {
-        next(err);
-    }
-}
-
-const getAllStudents = async (req: customRequest, res: Response, next: NextFunction) => {
-    const { role } = req.user as JwtPayload;
-
-    try {
-
-        if (role !== "ADMIN") {
-            next(errorHandler(400, "Sorry only admins can retrieve user data"));
-        }
-
-        const students = await prisma.user.findMany({
-            where: {
-                role: "STUDENT"
-            },
-            include: {
-                student: true
-            }
-        })
-
-        console.log(students);
-        res.status(200).json(students);
-
-    } catch (err) {
-        next(err);
-    }
-}
-
-const getAllParents = async (req: customRequest, res: Response, next: NextFunction) => {
-    const { role } = req.user as JwtPayload;
-
-    try {
-
-        if (role !== "ADMIN") {
-            next(errorHandler(400, "Sorry only admins can retrieve user data"));
-        }
-
-        const parents = await prisma.user.findMany({
-            where: {
-                role: "PARENT"
-            },
-            include: {
-                parent: true
-            }
-        })
-
-        console.log(parents);
-        res.status(200).json(parents);
-
-    } catch (err) {
-        next(err);
-    }
-}
-
-const getAllAdmins = async (req: customRequest, res: Response, next: NextFunction) => {
-    const { role } = req.user as JwtPayload;
-
-    try {
-
-        if (role !== "ADMIN") {
-            next(errorHandler(400, "Sorry only admins can retrieve user data"));
-        }
-
-        const admins = await prisma.user.findMany({
-            where: {
-                role: "ADMIN"
-            }
-        })
-
-        console.log(admins);
-        res.status(200).json(admins);
+            console.log(userByRole);
+            res.status(200).json(userByRole);
+            
+        }        
 
     } catch (err) {
         next(err);
@@ -278,8 +226,5 @@ export {
     updateUser,
     getAllUser,
     setStudentParent,
-    getAllTeachers,
-    getAllStudents,
-    getAllParents,
-    getAllAdmins
+    getUserByRole
 }

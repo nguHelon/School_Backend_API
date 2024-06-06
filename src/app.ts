@@ -2,6 +2,8 @@ import express, { Request, Response, NextFunction} from "express";
 import cookieParser from "cookie-parser";
 import authRouter from "./routes/authRoutes";
 import userRouter from "./routes/userRoutes";
+import classRouter from "./routes/classRoutes";
+import subjectRouter from "./routes/subjectRoutes";
 
 const app = express();
 
@@ -10,6 +12,8 @@ app.use(cookieParser());
 
 app.use("/auth", authRouter);
 app.use("/user", userRouter);
+app.use("/class", classRouter);
+app.use("/subject", subjectRouter);
 
 interface errType {
     statusCode: number,

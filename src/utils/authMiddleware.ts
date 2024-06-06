@@ -1,10 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import jwt, { VerifyErrors, JwtPayload} from "jsonwebtoken";
 import errorHandler from "./errorMiddleware";
-
-export interface customRequest extends Request {
-    user?: JwtPayload | string;
-}
+import { customRequest } from "./types";
 
 const verifyToken = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const token = req.cookies.access_token;
