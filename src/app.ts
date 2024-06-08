@@ -4,6 +4,8 @@ import authRouter from "./routes/authRoutes";
 import userRouter from "./routes/userRoutes";
 import classRouter from "./routes/classRoutes";
 import subjectRouter from "./routes/subjectRoutes";
+import attendanceRouter from "./routes/attendanceRoute";
+import gradebookRouter from "./routes/gradeBookRoutes";
 
 const app = express();
 
@@ -14,6 +16,8 @@ app.use("/auth", authRouter);
 app.use("/user", userRouter);
 app.use("/class", classRouter);
 app.use("/subject", subjectRouter);
+app.use("/attendance", attendanceRouter);
+app.use("/gradebook", gradebookRouter);
 
 interface errType {
     statusCode: number,

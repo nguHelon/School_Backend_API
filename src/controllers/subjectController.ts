@@ -8,8 +8,8 @@ const prisma = new PrismaClient();
 
 const createSubject = async (req: customRequest, res: Response, next: NextFunction) => {
     const { teacherIdQueryParam } = req.query;
-    const { name, teacherId } = req.body;
-    const { role } = req.user as JwtPayload;
+    const { name } = req.body;
+    const { role, id } = req.user as JwtPayload;
 
     try {
 
@@ -34,7 +34,7 @@ const createSubject = async (req: customRequest, res: Response, next: NextFuncti
         const subject = await prisma.subject.create({
             data: {
                 name,
-                teacherId
+                teacherId: parseInt(id)
             }
         });
 
@@ -65,7 +65,8 @@ const updateSubject = async (req: customRequest, res: Response, next: NextFuncti
         }
 
         if (!subjectToBeUpdated) {
-            next(errorHandler(404, "this Subject doesnt exist"))
+            next(errorHandler(404, "this Subject doesnt exist"));
+            return;
         }
 
         const updatedSubject = await prisma.subject.update({
@@ -110,6 +111,7 @@ const getSubjectById = async (req: customRequest, res: Response, next: NextFunct
 
         if (role !== "ADMIN") {
             next(errorHandler(401, "You are not authorized to get subject data"));
+            return;
         }
 
         const subjectById = await prisma.subject.findUnique({
@@ -120,6 +122,7 @@ const getSubjectById = async (req: customRequest, res: Response, next: NextFunct
 
         if (!subjectById) {
             next(errorHandler(404, "subject doesnt exist"));
+            return;
         }
 
         console.log(subjectById);

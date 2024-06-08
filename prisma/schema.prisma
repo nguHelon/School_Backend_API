@@ -63,13 +63,14 @@ model Parent {
 }
 
 model Class {
-  id        Int        @id @default(autoincrement())
-  name      String
-  teacherId Int?
-  teacher   Teacher?   @relation(fields: [teacherId], references: [id])
-  students  Student[]
-  homework  Homework[]
-  exams     Exam[]
+  id         Int          @id @default(autoincrement())
+  name       String
+  teacherId  Int?
+  teacher    Teacher?     @relation(fields: [teacherId], references: [id])
+  students   Student[]
+  homework   Homework[]
+  exams      Exam[]
+  attendance Attendance[]
 }
 
 model Subject {
@@ -86,6 +87,8 @@ model Attendance {
   status    AttendanceStatus
   studentId Int
   student   Student          @relation(fields: [studentId], references: [id])
+  classId   Int
+  class     Class            @relation(fields: [classId], references: [id])
 }
 
 enum AttendanceStatus {
