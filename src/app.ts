@@ -6,6 +6,7 @@ import classRouter from "./routes/classRoutes";
 import subjectRouter from "./routes/subjectRoutes";
 import attendanceRouter from "./routes/attendanceRoute";
 import gradebookRouter from "./routes/gradeBookRoutes";
+import homeworkRouter from "./routes/homeworkRoutes";
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.use("/class", classRouter);
 app.use("/subject", subjectRouter);
 app.use("/attendance", attendanceRouter);
 app.use("/gradebook", gradebookRouter);
+app.use("/homework", homeworkRouter);
 
 interface errType {
     statusCode: number,
